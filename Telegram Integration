@@ -52,7 +52,7 @@ except Exception:
     print("No module 'requests' found. Install: pip3 install requests")
     sys.exit(1)
 
-CHAT_ID = "1420707370"
+CHAT_ID = "xxxxxxxxxx"
 
 
 def create_message(alert_json):
