@@ -111,7 +111,7 @@ with open('/var/ossec/logs/integrations.log', 'a') as f:
 sys.exit(0)
 ------------------------------------------------------------------------------------------------------
 
-chown root:ossec /var/ossec/integrations/custom-telegram*
+chown root:wazuh /var/ossec/integrations/custom-telegram*
 
 chmod 750 /var/ossec/integrations/custom-telegram*
 
