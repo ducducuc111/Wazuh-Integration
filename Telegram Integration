@@ -38,6 +38,7 @@ ${WAZUH_PATH}/${WPYTHON_BIN} ${PYTHON_SCRIPT} "$@"
 -----------------------------------------------------------------------------------
 
 nano /var/ossec/integrations/custom-telegram.py
+// Cần thêm CHAT_ID của bot
 
 -----------------------------------------------------------------------------------
 #!/usr/bin/env python3
@@ -117,6 +118,8 @@ chmod 750 /var/ossec/integrations/custom-telegram*
 
 --------------------------------------------------------------------------------------------------------
 nano /var/ossec/etc/ossec.conf
+
+// Cần thay *YOUR API KEY* bằng HTTP API của bot được tạo ra
 
 <integration>
         <name>custom-telegram</name>
