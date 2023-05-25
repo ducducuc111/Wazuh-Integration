@@ -64,7 +64,45 @@ exit 0;
 <command>
   <name>yara_linux</name>
   <executable>yara.sh</executable>
-  <expect>filename</expect>
   <extra_args>-yara_path /usr/local/bin -yara_rules /usr/local/bin/yara-4.2.3/rules/index.yar</extra_args>
-<timeout_allowed>no</timeout_allowed>
-  </command>
+  <timeout_allowed>no</timeout_allowed>
+</command>
+
+---------------------------------------------------------------------------------------------------------------------------------------
+nano /var/ossec/etc/decoders/yara_decoder.xml
+
+<decoder name="yara_decoder">
+  <prematch>wazuh-yara:</prematch>
+</decoder>
+
+<decoder name="yara_decoder1">
+  <parent>yara_decoder</parent>
+  <regex>wazuh-yara: (\S+) - Scan result: (\S+) (\S+)</regex>
+  <order>log_type, yara_rule, yara_scanned_file</order>
+</decoder>
+
+<decoder name="yara_decoder2">
+  <parent>yara_decoder</parent>
+  <regex offset="after_parent">error: (\.+)</regex>
+  <order>error_message</order>
+</decoder>
+
+---------------------------------------------------------------------------------------------------------------------------------------
+nano /var/ossec/etc/rules/yara_rules.xml
+
+<group name="yara,">
+  <rule id="108000" level="0">
+    <decoded_as>yara_decoder</decoded_as>
+    <description>Yara grouping rule</description>
+  </rule>
+  <rule id="108009" level="5">
+    <if_sid>108000</if_sid>
+    <match>wazuh-yara: error: </match>
+    <description>YARA error detected.</description>
+  </rule>
+  <rule id="108001" level="12">
+    <if_sid>108000</if_sid>
+    <match>wazuh-yara: INFO - Scan result: </match>
+    <description>File "$(yara_scanned_file)" is a positive match. Yara rule: $(yara_rule)</description>
+  </rule>
+</group>
