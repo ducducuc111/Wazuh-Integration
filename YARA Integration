@@ -56,17 +56,16 @@ exit 0;
 ########################################################## WAZUH MANAGER ##############################################################
 
 <command>
-  <name>netsh</name>
-  <executable>netsh.exe</executable>
-  <timeout_allowed>yes</timeout_allowed>
-</command>
-
-<command>
   <name>yara_linux</name>
   <executable>yara.sh</executable>
   <extra_args>-yara_path /usr/local/bin -yara_rules /usr/local/bin/yara-4.2.3/rules/index.yar</extra_args>
   <timeout_allowed>no</timeout_allowed>
 </command>
+<active-response>
+  <command>yara_linux</command>
+  <location>local</location>
+  <rules_id>550,554</rules_id>
+</active-response>
 
 ---------------------------------------------------------------------------------------------------------------------------------------
 nano /var/ossec/etc/decoders/yara_decoder.xml
