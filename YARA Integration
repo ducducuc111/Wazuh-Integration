@@ -113,10 +113,8 @@ nano /var/ossec/etc/decoders/yara_decoder.xml
   <order>log_type, yara_rule, yara_scanned_file</order>
 </decoder>
 
-<decoder name="yara_decoder2">
-  <parent>yara_decoder</parent>
-  <regex offset="after_parent">error: (\.+)</regex>
-  <order>error_message</order>
+<decoder name="yara_decoder_error">
+  <prematch>error: </prematch>
 </decoder>
 
 ---------------------------------------------------------------------------------------------------------------------------------------
@@ -130,10 +128,14 @@ nano /var/ossec/etc/rules/yara_rules.xml
     <decoded_as>yara_decoder</decoded_as>
     <description>Yara grouping rule</description>
   </rule>
+  <rule id="108003" level="0">
+    <decoded_as>yara_decoder_error</decoded_as>
+    <description>Yara error rule</description>
+  </rule>
   <rule id="108009" level="5">
-    <if_sid>108000</if_sid>
-    <match>wazuh-yara: error: </match>
-    <description>YARA error detected.</description>
+    <if_sid>108003</if_sid>
+    <match>error: </match>
+    <description>YARA ERROR Detected.</description>
   </rule>
   <rule id="108001" level="12">
     <if_sid>108000</if_sid>
