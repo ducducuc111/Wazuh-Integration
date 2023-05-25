@@ -1,3 +1,23 @@
+/*
+    Cấu hình tích hợp YARA vào Wazuh trong cả 2 phần cấu hinh là Wazuh-Agent và Wazuh-Manager
+    Lưu ý: cấu hình này được tác giả triển khai trên nền tảng Debain Ubuntu
+    
+    Quy trình hoạt động cảnh báo bao gồm những bước dưới:
+    1. Nếu có một tệp được tạo hoặc sửa đổi ở phía Agent thì sẽ có một Alert được gửi đến Wazuh-Manager với mã là 550,554
+    2. Wazuh-Manager xác nhận và gửi thực hiện "Active response" với rule trong local_rules.xml, gọi đến yara.sh ở Wazuh-Agent
+    3. Khi yara.sh được gọi ở Wazuh-Agent thì nó sẽ thực hiện quét với những tệp vừa được tạo hoặc sửa đổi.
+    4. Nếu có phát hiện bất kỳ hành vi độc hại hoặc có lỗi xảy ra thì có một cảnh báo gửi lại phái Wazuh-Manager+
+    
+    Nguồn: https://documentation.wazuh.com/current/user-manual/capabilities/malware-detection/fim-yara.html
+*/
+
+
+########################################################## WAZUH Agent ##############################################################
+/*
+    Tệp yara.sh sẽ thực hiện lấy 2 biến đường dẫn được cung cấp ở local_rules.xml phía Wazuh-Manager và thực hiện quét
+    Toàn bộ đầu ra sẽ được ghi lại trong "active-responses.log" phía Wazuh-Agent đó
+*/
+
 nano /var/ossec/active-response/bin/yara.sh
 
 #!/bin/bash
@@ -54,6 +74,13 @@ exit 0;
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 ########################################################## WAZUH MANAGER ##############################################################
+/*
+    /usr/local/bin và /usr/local/bin/yara-4.2.3/rules/index.yar là đường dẫn nơi chứa Yara và bộ rules của nó.
+    Các quy tắc trong thẻ <active-response> sẽ thực hiện với thẻ <command> có <name> yara_linux.
+    <location>local</location> có thể hiểu là việc quét sẽ diễn ra tại chính Wazuh-Agent đó.
+    550, 554 là 2 ruleid xuất hiện khi có một tệp được tạo hoặc sửa đổi.
+*/
+
 nano /var/ossec/etc/rules/local_rules.xml
 
 <command>
@@ -69,6 +96,11 @@ nano /var/ossec/etc/rules/local_rules.xml
 </active-response>
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+/*
+    thẻ <order> sẽ lấy những giá trị như tên tệp đã bị sửa hoặc xoá và tên rule đã phát hiện, 2 cái này sẽ được dùng đến trong yara_rules.xml
+    Thẻ <regex> sẽ gắp toàn bộ trường có chưa giá trị của thẻ <regex> ra để thực hiện decode
+*/
+
 nano /var/ossec/etc/decoders/yara_decoder.xml
 
 <decoder name="yara_decoder">
@@ -88,6 +120,9 @@ nano /var/ossec/etc/decoders/yara_decoder.xml
 </decoder>
 
 ---------------------------------------------------------------------------------------------------------------------------------------
+/*
+    Thẻ <match> hỗ trợ ta khới với đầu ra cảnh báo được gửi từ Wazuh-Agent, từ đó giúp xác định chính xác cảnh báo.
+*/
 nano /var/ossec/etc/rules/yara_rules.xml
 
 <group name="yara,">
