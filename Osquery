@@ -1,1 +1,8 @@
+/*
+  OSQuery có thể hoạt động trên cả 3 môi trường là Linux, Windows và MAC
+  Nó áp dụng truy vấn kiểu SQL để khám phá các thông tin hệ thống như: thông tin HĐH, cổng mở, phân giải DNS, số lượng người dùng, tiến trình trên hệ thống, ...
+  Dù những thông tin trên có thể được thể hiện trên HĐH nhưng OSQuery sẽ làm cho nó chi tiết và rõ ràng hơn nữa
+*/
+
 Cài đặt trên Centos7 : yum -y install https://pkg.osquery.io/rpm/osquery-4.3.0-1.linux.x86_64.rpm
+
